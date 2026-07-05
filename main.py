@@ -1,6 +1,6 @@
 import os
 import requests
-from PyPtt import PTT, ConnectionMode  # 這裡加入了 ConnectionMode
+from PyPtt import PTT  # 這裡把 ConnectionMode 拿掉了，回歸最單純的 import
 from PyPtt import exceptions as PTT_exceptions
 from datetime import datetime, timezone, timedelta
 from typing import Union
@@ -36,8 +36,8 @@ for i in range(2, 6):
     if pttid_ and pttid_ != "none":
         ptt_account.append(pttid_)
 
-# 修改這裡：加入 connection_mode=ConnectionMode.SSH 參數
-ptt = PTT.API(log_level=PTT.log.INFO, connection_mode=ConnectionMode.SSH)
+# 修改這裡：直接傳入字串 'SSH'，不使用列舉型態
+ptt = PTT.API(log_level=PTT.log.INFO, connection_mode='SSH')
 tg = Bot(BOT_TOKEN, CHAT_ID)
 
 
