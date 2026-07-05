@@ -1,1 +1,30 @@
+name: Daily Trigger
 
+on:
+  workflow_dispatch: # 允許手動點擊按鈕執行
+  schedule:
+    - cron: "30 2 * * *" # 每天 UTC 02:30（台灣時間 10:30）自動執行
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 簽出原始碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Python 環境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安裝基礎套件
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests PySocks
+
+      - name: 執行自動登入
+        env:
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          chat_id: ${{ secrets.CHAT_ID }}
+          ptt_id_1: ${{ secrets.PTT_ID_1 }}
+        run: python main.py
