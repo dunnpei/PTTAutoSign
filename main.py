@@ -37,7 +37,8 @@ for i in range(2, 6):
         ptt_account.append(pttid_)
 
 # 修改這裡：直接傳入字串 'SSH'，不使用列舉型態
-ptt = PTT.API(log_level=PTT.log.INFO, connection_mode='SSH')
+from PyPtt import HOST_TYPE
+ptt = PTT.API(log_level=PTT.log.INFO, host=HOST_TYPE.PTT_SSH)
 tg = Bot(BOT_TOKEN, CHAT_ID)
 
 
