@@ -1,4 +1,6 @@
 import os
+import socks
+import socket
 import telnetlib
 import time
 import requests
@@ -11,7 +13,6 @@ def send_tg_notification(text):
         requests.post(url, json={"chat_id": chat_id, "text": text})
 
 def ptt_login_telnet():
-    # 這裡直接解析環境變數中的帳密
     ptt_id_1 = os.getenv("ptt_id_1")
     if not ptt_id_1:
         print("未設定帳號")
@@ -20,10 +21,19 @@ def ptt_login_telnet():
     username, password = ptt_id_1.split(",")
 
     try:
-        # 直接連線到 PTT 的 Telnet 埠口
-        print("正在連線至 ptt.cc...")
-        tn = telnetlib.Telnet("ptt.cc", 23, timeout=10)
-        time.sleep(2)
+        print("正在設定台灣/動態 Proxy 代理...")
+        # 這裡設定一個常見的台灣/亞洲區公開 Socks5 代理（若此 IP 失效，可更換其他免費 Socks5）
+        # 註：如果連線依然失敗，代表該免費代理掛了，需更換 proxy_ip
+        proxy_ip = "114.35.138.9"  # 台灣中部電信寬頻 IP 範例
+        proxy_port = 1080
+        
+        # 強制將全域的 socket 連線轉向 Proxy
+        socks.set_default_proxy(socks.SOCKS5, proxy_ip, proxy_port)
+        socket.socket = socks.socksocket
+
+        print(f"正在透過代理 {proxy_ip} 連線至 ptt.cc...")
+        tn = telnetlib.Telnet("ptt.cc", 23, timeout=15)
+        time.sleep(3)
 
         # 讀取歡迎畫面
         content = tn.read_very_eager().decode('big5', errors='ignore')
@@ -37,21 +47,21 @@ def ptt_login_telnet():
             tn.write(f"{password}\r\n".encode('big5'))
             time.sleep(3)
             
-            # 處理重複登入或首頁通知（多按幾次 Enter 或者是大寫 G 離開）
+            # 處理重複登入或首頁通知
             tn.write(b"\r\n")
             time.sleep(1)
             tn.write(b"\r\n")
             time.sleep(1)
             
-            # 安全登出，維持良好習慣
-            tn.write(b"g\r\n") # 離開安全步道
-            tn.write(b"y\r\n") # 確定登出
+            # 安全登出
+            tn.write(b"g\r\n") 
+            tn.write(b"y\r\n") 
             
             print("登入與登出程序執行完畢")
-            send_tg_notification(f"✅ PTT 帳號 {username} 透過 Telnet 自動登入成功！")
+            send_tg_notification(f"✅ PTT 帳號 {username} 已成功偽裝台灣 IP 登入！")
         else:
             print("無法辨識 PTT 歡迎畫面")
-            send_tg_notification("❌ PTT 自動登入失敗：無法辨識歡迎畫面")
+            send_tg_notification("❌ PTT 自動登入失敗：無法辨識歡迎畫面（可能代理伺服器速度過慢）")
             
         tn.close()
     except Exception as e:
