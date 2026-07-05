@@ -17,11 +17,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: 安裝 Poetry 與相依套件
+      - name: 直接使用 Pip 安裝最新版套件
         run: |
-          pip install poetry
-          poetry lock
-          poetry install
+          python -m pip install --upgrade pip
+          pip install PyPtt requests
 
       - name: 執行 PTT 自動簽到
         env:
@@ -30,4 +29,4 @@ jobs:
           ptt_id_1: ${{ secrets.PTT_ID_1 }}
           ptt_id_2: ${{ secrets.PTT_ID_2 }}
         run: |
-          poetry run python main.py
+          python main.py
