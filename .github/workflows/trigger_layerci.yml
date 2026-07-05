@@ -20,7 +20,7 @@ jobs:
       - name: 安裝 Poetry 與相依套件
         run: |
           pip install poetry
-          poetry lock --no-update # 強制讓 lock 檔案同步符合新的 pyproject.toml 內容
+          poetry lock
           poetry install
 
       - name: 執行 PTT 自動簽到
