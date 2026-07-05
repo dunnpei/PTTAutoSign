@@ -2,8 +2,6 @@ name: Daily Trigger
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "30 2 * * *" # 每天 UTC 02:30（台灣時間 10:30）自動執行
 
 jobs:
   build:
@@ -12,21 +10,17 @@ jobs:
       - name: 簽出原始碼
         uses: actions/checkout@v4
 
-      - name: 設定 Python 環境
+      - name: 設定 Python 环境
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: 直接使用 Pip 安裝最新版套件
-        run: |
-          python -m pip install --upgrade pip
-          pip install PyPtt requests
+      - name: 安裝基礎套件
+        run: pip install requests
 
-      - name: 執行 PTT 自動簽到
+      - name: 執行自動登入
         env:
           bot_token: ${{ secrets.BOT_TOKEN }}
           chat_id: ${{ secrets.CHAT_ID }}
           ptt_id_1: ${{ secrets.PTT_ID_1 }}
-          ptt_id_2: ${{ secrets.PTT_ID_2 }}
-        run: |
-          python main.py
+        run: python main.py
