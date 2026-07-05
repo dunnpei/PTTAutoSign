@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 簽出原始碼
-        uses: actions/checkout@v4 # 更新到 v4 解決警告
+        uses: actions/checkout@v4
 
       - name: 設定 Python 環境
-        uses: actions/setup-python@v5 # 更新到 v5 解決警告
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11' # 配合專案要求使用 3.11
+          python-version: '3.11'
 
       - name: 安裝 Poetry 與相依套件
         run: |
           pip install poetry
-          poetry install --no-root # 加上 --no-root 解決目前的錯誤
+          poetry lock --no-update # 強制讓 lock 檔案同步符合新的 pyproject.toml 內容
+          poetry install
 
       - name: 執行 PTT 自動簽到
         env:
